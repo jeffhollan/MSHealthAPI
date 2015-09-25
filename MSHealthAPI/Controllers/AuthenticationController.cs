@@ -42,11 +42,32 @@ namespace MSHealthAPI.Controllers
                 var result = await client.PostAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&code={3}&grant_type=authorization_code", clientId, redirectUrl, clientSecret, code), new FormUrlEncodedContent(RequestKeyValue(code)));
                 var jsonResult = await result.Content.ReadAsStringAsync();
                 var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
-                MSHealthAPI.Controllers.MSHealthController.access_token = OAuthResult.access_token;
+                OAuthResult.expires = DateTime.Now.AddSeconds(OAuthResult.expires_in);
+                MSHealthController.authorization = OAuthResult;
                 return Request.CreateResponse<OAuthResponse>(OAuthResult);
                 //var data = Encoding.ASCII.GetBytes(jsonResult);
                 //await storage.WriteAsync("OAuthResponse", data);
                 //return Request.CreateResponse<OAuthResponse>(OAuthToken);
+            }
+        }
+
+        
+
+        public static async Task CheckToken()
+        {
+            if (MSHealthController.authorization.expires < DateTime.Now)
+            {
+                using (var client = new HttpClient())
+                {
+                   var result = await client.PostAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&refresh_token={3}&grant_type=refresh_token", 
+                       clientId, redirectUrl, clientSecret, MSHealthController.authorization.refresh_token), 
+                       new FormUrlEncodedContent(RefreshKeyValue(MSHealthController.authorization.refresh_token)));
+
+                    var jsonResult = await result.Content.ReadAsStringAsync();
+                    var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
+                    OAuthResult.expires = DateTime.Now.AddSeconds(OAuthResult.expires_in);
+                    MSHealthController.authorization = OAuthResult;
+                }
             }
         }
 
@@ -60,6 +81,15 @@ namespace MSHealthAPI.Controllers
                     new KeyValuePair<string,string>("grant_type", "authorization_code")
             };
         }
-            
+
+        private static List<KeyValuePair<string, string>> RefreshKeyValue(string refresh)
+        {
+            return new List<KeyValuePair<string, string>> {
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string,string>("redirect_uri", redirectUrl),
+                    new KeyValuePair<string,string>("client_secret", clientSecret),
+                    new KeyValuePair<string,string>("refresh_token", refresh),
+            };
+        }
     }
 }
