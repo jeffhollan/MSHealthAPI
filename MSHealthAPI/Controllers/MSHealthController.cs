@@ -13,11 +13,12 @@ namespace MSHealthAPI.Controllers
     [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
     public class MSHealthController : ApiController
     {
-        CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
+        public static string access_token { get; set; }
+        //CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
         public async System.Threading.Tasks.Task<HttpResponseMessage> GetProfile()
         {
-            try { 
-                string access_token = await GetToken();
+            try {
+                //string access_token = await GetToken();
 
                 using (var client = new HttpClient())
                 {
@@ -36,12 +37,13 @@ namespace MSHealthAPI.Controllers
 
         private async System.Threading.Tasks.Task<string> GetToken()
         {
-            var json = await storage.ReadAsStringAsync("OAuthResponse");
-            if (string.IsNullOrEmpty(json))
-                throw new UnauthorizedAccessException("You have not yet authorized");
+            //var json = await storage.ReadAsStringAsync("OAuthResponse");
+            //if (string.IsNullOrEmpty(json))
+            //    throw new UnauthorizedAccessException("You have not yet authorized");
 
-            var response = JsonConvert.DeserializeObject<OAuthResponse>(json);
-            return response.access_token;
+            //var response = JsonConvert.DeserializeObject<OAuthResponse>(json);
+            //return response.access_token;
+            return "temp";
         }
     }
 }

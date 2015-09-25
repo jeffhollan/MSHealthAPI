@@ -20,7 +20,7 @@ namespace MSHealthAPI.Controllers
         private static string clientId = ConfigurationManager.AppSettings["clientId"];
         private static string redirectUrl = "https://" + ConfigurationManager.AppSettings["siteUrl"] + ".azurewebsites.net/redirect";
         private static string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
-        private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
+        //private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
         [HttpGet, Route("showRedirect")]
         public string ShowRedirect()
@@ -35,14 +35,17 @@ namespace MSHealthAPI.Controllers
         }
 
         [HttpGet, Route("redirect")]
-        public async void CompleteAuth(string code)
+        public async Task<HttpResponseMessage> CompleteAuth(string code)
         {
             using (var client = new HttpClient())
             {
                 var result = await client.PostAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&code={3}&grant_type=authorization_code", clientId, redirectUrl, clientSecret, code), new FormUrlEncodedContent(RequestKeyValue(code)));
                 var jsonResult = await result.Content.ReadAsStringAsync();
-                var data = Encoding.ASCII.GetBytes(jsonResult);
-                await storage.WriteAsync("OAuthResponse", data);
+                var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
+                MSHealthAPI.Controllers.MSHealthController.access_token = OAuthResult.access_token;
+                return Request.CreateResponse<OAuthResponse>(OAuthResult);
+                //var data = Encoding.ASCII.GetBytes(jsonResult);
+                //await storage.WriteAsync("OAuthResponse", data);
                 //return Request.CreateResponse<OAuthResponse>(OAuthToken);
             }
         }
