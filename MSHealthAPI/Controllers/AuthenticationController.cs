@@ -11,18 +11,24 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MSHealthAPI.Models;
 using System.Text;
+using System.Configuration;
 
 namespace MSHealthAPI.Controllers
 {
     public class AuthenticationController : ApiController
     {
-        private static string clientId = "000000004C16782E";
-        private static string redirectUrl = "http://requestb.in/umdjooum";
-        private static string clientSecret = "bSXbd922T1XwyGw5zWcdRbNWcCa1utuu";
+        private static string clientId = ConfigurationManager.AppSettings["clientId"];
+        private static string redirectUrl = "https://" + ConfigurationManager.AppSettings["siteUrl"] + ".azurewebsites.net/redirect";
+        private static string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
         private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
+        [HttpGet, Route("showRedirect")]
+        public string ShowRedirect()
+        {
+            return "Your redirect URL is: \n" + redirectUrl;
+        }
+
         [HttpGet, Route("authorize")]
-        
         public System.Web.Http.Results.RedirectResult Authorize()
         {
             return Redirect(String.Format("https://login.live.com/oauth20_authorize.srf?client_id={0}&scope={1}&response_type=code&redirect_uri={2}", clientId, "mshealth.ReadProfile mshealth.ReadActivityHistory mshealth.ReadDevices mshealth.ReadActivityLocation offline_access", redirectUrl));
