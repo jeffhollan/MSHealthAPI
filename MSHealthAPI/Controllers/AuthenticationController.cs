@@ -42,12 +42,10 @@ namespace MSHealthAPI.Controllers
                 var result = await client.PostAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&code={3}&grant_type=authorization_code", clientId, redirectUrl, clientSecret, code), new FormUrlEncodedContent(RequestKeyValue(code)));
                 var jsonResult = await result.Content.ReadAsStringAsync();
                 var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
-                OAuthResult.expires = DateTime.Now.AddSeconds(OAuthResult.expires_in);
+                OAuthResult.expires = DateTime.UtcNow.AddSeconds(OAuthResult.expires_in);
                 MSHealthController.authorization = OAuthResult;
-                return Request.CreateResponse<OAuthResponse>(OAuthResult);
-                //var data = Encoding.ASCII.GetBytes(jsonResult);
-                //await storage.WriteAsync("OAuthResponse", data);
-                //return Request.CreateResponse<OAuthResponse>(OAuthToken);
+                return Request.CreateResponse(HttpStatusCode.OK, "Successfully Authenticated");
+                
             }
         }
 
@@ -55,7 +53,7 @@ namespace MSHealthAPI.Controllers
 
         public static async Task CheckToken()
         {
-            if (MSHealthController.authorization.expires < DateTime.Now)
+            if (DateTime.UtcNow.CompareTo(MSHealthController.authorization.expires) > 0)
             {
                 using (var client = new HttpClient())
                 {
@@ -65,7 +63,7 @@ namespace MSHealthAPI.Controllers
 
                     var jsonResult = await result.Content.ReadAsStringAsync();
                     var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
-                    OAuthResult.expires = DateTime.Now.AddSeconds(OAuthResult.expires_in);
+                    OAuthResult.expires = DateTime.UtcNow.AddSeconds(OAuthResult.expires_in);
                     MSHealthController.authorization = OAuthResult;
                 }
             }
