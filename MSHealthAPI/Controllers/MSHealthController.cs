@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TRex.Metadata;
@@ -18,6 +19,7 @@ namespace MSHealthAPI.Controllers
     public class MSHealthController : ApiController
     {
         public static OAuthResponse authorization;
+        private AuthenticationController tokenHandler = new AuthenticationController();
         //CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
@@ -28,7 +30,7 @@ namespace MSHealthAPI.Controllers
             if (authorization == null || authorization.access_token == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
 
-            await AuthenticationController.CheckToken();
+            await tokenHandler.CheckToken();
 
             using (var client = new HttpClient())
             {
@@ -42,7 +44,7 @@ namespace MSHealthAPI.Controllers
         [HttpGet, Route("api/GetHourlySummary")]
         [Trigger(TriggerType.Poll, typeof(JObject))]
         [Metadata("Get Hourly Summary")]
-        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState)
+        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState, Duration period)
         {
             if (authorization == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
@@ -59,7 +61,7 @@ namespace MSHealthAPI.Controllers
                 }
             }
 
-            await AuthenticationController.CheckToken();
+            await tokenHandler.CheckToken();
 
             using (var client = new HttpClient())
             {
@@ -67,6 +69,12 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", triggerState));
                 return Request.EventTriggered(new SummaryResponse((await result.Content.ReadAsStringAsync())), triggerState = DateTime.UtcNow.ToString("o"));
             }
+        }
+
+        public enum Duration
+        {
+            HOURLY = 1,
+            DAILY = 2
         }
 
     }

@@ -18,9 +18,9 @@ namespace MSHealthAPI.Controllers
 {
     public class AuthenticationController : ApiController
     {
-        private static string clientId = ConfigurationManager.AppSettings["clientId"];
-        private static string redirectUrl = "https://" + ConfigurationManager.AppSettings["siteUrl"] + ".azurewebsites.net/redirect";
-        private static string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
+        private string clientId = ConfigurationManager.AppSettings["clientId"];
+        private string redirectUrl = "https://" + ConfigurationManager.AppSettings["siteUrl"] + ".azurewebsites.net/redirect";
+        private string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
         //private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
         [Metadata(Visibility = VisibilityType.Internal)]
@@ -48,15 +48,19 @@ namespace MSHealthAPI.Controllers
                 var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
                 OAuthResult.expires = DateTime.UtcNow.AddSeconds(OAuthResult.expires_in);
                 MSHealthController.authorization = OAuthResult;
+                await WriteTokenToStorage(OAuthResult);
                 return Request.CreateResponse(HttpStatusCode.OK, "Successfully Authenticated");
                 
             }
         }
 
-      
+        
 
-        public static async Task CheckToken()
+        public async Task CheckToken()
         {
+            if (MSHealthController.authorization == null)
+                MSHealthController.authorization = await ReadTokenFromStorage();
+
             if (DateTime.UtcNow.CompareTo(MSHealthController.authorization.expires) >= 0)
             {
                 using (var client = new HttpClient())
@@ -72,7 +76,7 @@ namespace MSHealthAPI.Controllers
             }
         }
 
-        private static List<KeyValuePair<string, string>> RequestKeyValue(string code)
+        private List<KeyValuePair<string, string>> RequestKeyValue(string code)
         {
             return new List<KeyValuePair<string, string>> {
                     new KeyValuePair<string, string>("client_id", clientId),
@@ -81,6 +85,19 @@ namespace MSHealthAPI.Controllers
                     new KeyValuePair<string,string>("code", code),
                     new KeyValuePair<string,string>("grant_type", "authorization_code")
             };
+        }
+
+        private async Task WriteTokenToStorage(OAuthResponse oAuthResult)
+        {
+            var storage = Runtime.FromAppSettings().IsolatedStorage;
+            await storage.WriteAsync("auth", JsonConvert.SerializeObject(oAuthResult));
+        }
+
+        private async Task<OAuthResponse> ReadTokenFromStorage()
+        {
+            var storage = Runtime.FromAppSettings().IsolatedStorage;
+            var authString = await storage.ReadAsStringAsync("auth");
+            return JsonConvert.DeserializeObject<OAuthResponse>(authString);
         }
     }
 }
