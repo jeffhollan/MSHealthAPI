@@ -25,7 +25,7 @@ namespace MSHealthAPI.Controllers
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
         [HttpGet, Route("api/GetProfile")]
         [Metadata("Get Profile", "Returns information about the current health user")]
-        public async Task<HttpResponseMessage> GetProfile()
+        private async Task<HttpResponseMessage> GetProfile()
         {
             if (authorization == null || authorization.access_token == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
