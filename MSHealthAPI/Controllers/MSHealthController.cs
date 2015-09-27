@@ -54,12 +54,13 @@ namespace MSHealthAPI.Controllers
 
             await AuthenticationController.CheckToken();
 
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", period, triggerState));
-                return Request.EventTriggered(new SummaryResponse((await result.Content.ReadAsStringAsync())), triggerState = DateTime.UtcNow.ToString("o"));
-            }
+            //using (var client = new HttpClient())
+            //{
+            //    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
+            //    var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", period, triggerState));
+            //    return Request.EventTriggered(new SummaryResponse((await result.Content.ReadAsStringAsync())), triggerState = DateTime.UtcNow.ToString("o"));
+            //}
+            return Request.EventTriggered(authorization, triggerState = DateTime.UtcNow.ToString("o"));
         }
 
     }

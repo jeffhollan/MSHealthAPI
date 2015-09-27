@@ -49,17 +49,16 @@ namespace MSHealthAPI.Controllers
             }
         }
 
-        
+      
 
         public static async Task CheckToken()
         {
-            if (DateTime.UtcNow.CompareTo(MSHealthController.authorization.expires) > 0)
+            if (DateTime.UtcNow.CompareTo(MSHealthController.authorization.expires) >= 0)
             {
                 using (var client = new HttpClient())
                 {
-                   var result = await client.PostAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&refresh_token={3}&grant_type=refresh_token", 
-                       clientId, redirectUrl, clientSecret, MSHealthController.authorization.refresh_token), 
-                       new FormUrlEncodedContent(RefreshKeyValue(MSHealthController.authorization.refresh_token)));
+                    var result = await client.GetAsync(string.Format("https://login.live.com/oauth20_token.srf?client_id={0}&redirect_uri={1}&client_secret={2}&refresh_token={3}&grant_type=refresh_token",
+                        clientId, redirectUrl, clientSecret, MSHealthController.authorization.refresh_token));
 
                     var jsonResult = await result.Content.ReadAsStringAsync();
                     var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
