@@ -46,9 +46,7 @@ namespace MSHealthAPI.Controllers
         [Metadata("Get Hourly Summary")]
         public async Task<HttpResponseMessage> GetHourlySummary(string triggerState, Duration period)
         {
-            if (authorization == null)
-                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
-
+            
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
 
@@ -62,6 +60,10 @@ namespace MSHealthAPI.Controllers
             }
 
             await tokenHandler.CheckToken();
+
+            if (authorization == null)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+
 
             using (var client = new HttpClient())
             {

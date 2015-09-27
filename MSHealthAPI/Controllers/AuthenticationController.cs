@@ -61,6 +61,9 @@ namespace MSHealthAPI.Controllers
             if (MSHealthController.authorization == null)
                 MSHealthController.authorization = await ReadTokenFromStorage();
 
+            if (MSHealthController.authorization == null)
+                return;
+
             if (DateTime.UtcNow.CompareTo(MSHealthController.authorization.expires) >= 0)
             {
                 using (var client = new HttpClient())
@@ -72,6 +75,7 @@ namespace MSHealthAPI.Controllers
                     var OAuthResult = JsonConvert.DeserializeObject<OAuthResponse>(jsonResult);
                     OAuthResult.expires = DateTime.UtcNow.AddSeconds(OAuthResult.expires_in);
                     MSHealthController.authorization = OAuthResult;
+                    await WriteTokenToStorage(OAuthResult);
                 }
             }
         }
