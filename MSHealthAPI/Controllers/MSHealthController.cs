@@ -49,12 +49,13 @@ namespace MSHealthAPI.Controllers
 
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
+
             else
             {
                 var triggerDate = DateTime.Parse(triggerState);
-                if(triggerDate.Hour == DateTime.UtcNow.Hour && triggerDate.Date == DateTime.UtcNow.Date)
+                if (triggerDate.Hour == DateTime.UtcNow.Hour && triggerDate.Date == DateTime.UtcNow.Date)
                 {
-                    return Request.EventWaitPoll( TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)));
+                    return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = null);
                 }
             }
 
@@ -66,7 +67,6 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", triggerState));
                 return Request.EventTriggered(new SummaryResponse((await result.Content.ReadAsStringAsync())), triggerState = DateTime.UtcNow.ToString("o"));
             }
-
         }
 
     }

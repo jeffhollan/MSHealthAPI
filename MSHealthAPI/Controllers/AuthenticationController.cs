@@ -27,7 +27,7 @@ namespace MSHealthAPI.Controllers
         [HttpGet, Route("showRedirect")]
         public string ShowRedirect()
         {
-            return "Your redirect URL is: \n" + redirectUrl;
+            return "Your redirect URL is: " + redirectUrl;
         }
 
         [Metadata(Visibility = VisibilityType.Internal)]
