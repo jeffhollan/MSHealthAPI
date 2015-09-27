@@ -53,9 +53,10 @@ namespace MSHealthAPI.Controllers
             else
             {
                 var triggerDate = DateTime.Parse(triggerState);
+                var oldTriggerState = triggerState;
                 if (triggerDate.Hour == DateTime.UtcNow.Hour && triggerDate.Date == DateTime.UtcNow.Date)
                 {
-                    return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = null);
+                    return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = oldTriggerState);
                 }
             }
 
