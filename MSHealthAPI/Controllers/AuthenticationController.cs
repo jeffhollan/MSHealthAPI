@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using MSHealthAPI.Models;
 using System.Text;
 using System.Configuration;
+using TRex.Metadata;
 
 namespace MSHealthAPI.Controllers
 {
@@ -22,18 +23,21 @@ namespace MSHealthAPI.Controllers
         private static string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
         //private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
+        [Metadata(Visibility = VisibilityType.Internal)]
         [HttpGet, Route("showRedirect")]
         public string ShowRedirect()
         {
             return "Your redirect URL is: \n" + redirectUrl;
         }
 
+        [Metadata(Visibility = VisibilityType.Internal)]
         [HttpGet, Route("authorize")]
         public System.Web.Http.Results.RedirectResult Authorize()
         {
             return Redirect(String.Format("https://login.live.com/oauth20_authorize.srf?client_id={0}&scope={1}&response_type=code&redirect_uri={2}", clientId, "mshealth.ReadProfile mshealth.ReadActivityHistory mshealth.ReadDevices mshealth.ReadActivityLocation offline_access", redirectUrl));
         }
 
+        [Metadata(Visibility = VisibilityType.Internal)]
         [HttpGet, Route("redirect")]
         public async Task<HttpResponseMessage> CompleteAuth(string code)
         {
@@ -76,16 +80,6 @@ namespace MSHealthAPI.Controllers
                     new KeyValuePair<string,string>("client_secret", clientSecret),
                     new KeyValuePair<string,string>("code", code),
                     new KeyValuePair<string,string>("grant_type", "authorization_code")
-            };
-        }
-
-        private static List<KeyValuePair<string, string>> RefreshKeyValue(string refresh)
-        {
-            return new List<KeyValuePair<string, string>> {
-                    new KeyValuePair<string, string>("client_id", clientId),
-                    new KeyValuePair<string,string>("redirect_uri", redirectUrl),
-                    new KeyValuePair<string,string>("client_secret", clientSecret),
-                    new KeyValuePair<string,string>("refresh_token", refresh),
             };
         }
     }
