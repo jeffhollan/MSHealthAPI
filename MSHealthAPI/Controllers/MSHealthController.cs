@@ -55,6 +55,7 @@ namespace MSHealthAPI.Controllers
                 {
                     return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = triggerDate.ToUniversalTime().ToString("o"));
                 }
+                triggerState = triggerDate.ToUniversalTime().ToString("o");
             }
 
             await tokenHandler.CheckToken();
