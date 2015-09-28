@@ -21,7 +21,6 @@ namespace MSHealthAPI.Controllers
         private string clientId = ConfigurationManager.AppSettings["clientId"];
         private string redirectUrl = "https://" + ConfigurationManager.AppSettings["siteUrl"] + ".azurewebsites.net/redirect";
         private string clientSecret = ConfigurationManager.AppSettings["clientSecret"];
-        //private CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
         [Metadata(Visibility = VisibilityType.Internal)]
         [HttpGet, Route("showRedirect")]
@@ -53,8 +52,6 @@ namespace MSHealthAPI.Controllers
                 
             }
         }
-
-        
 
         public async Task CheckToken()
         {
