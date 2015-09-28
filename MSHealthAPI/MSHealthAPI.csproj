@@ -145,6 +145,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\OAuthResponse.cs" />
+    <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\SummaryResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
