@@ -44,19 +44,16 @@ namespace MSHealthAPI.Controllers
         [HttpGet, Route("api/GetHourlySummary")]
         [Trigger(TriggerType.Poll, typeof(JObject))]
         [Metadata("Get Hourly Summary")]
-        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState, Duration period)
-        {
-            
+        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState)
+        { 
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
-
             else
             {
                 var triggerDate = DateTime.Parse(triggerState);
-                var oldTriggerState = triggerState;
                 if (triggerDate.Hour == DateTime.UtcNow.Hour && triggerDate.Date == DateTime.UtcNow.Date)
                 {
-                    return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = oldTriggerState);
+                    return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = triggerDate.ToUniversalTime().ToString("o"));
                 }
             }
 
@@ -73,12 +70,5 @@ namespace MSHealthAPI.Controllers
                 return Request.EventTriggered(new SummaryResponse((await result.Content.ReadAsStringAsync())), triggerState = DateTime.UtcNow.ToString("o"));
             }
         }
-
-        public enum Duration
-        {
-            HOURLY = 1,
-            DAILY = 2
-        }
-
     }
 }
