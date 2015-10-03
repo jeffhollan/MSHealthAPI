@@ -71,5 +71,26 @@ namespace MSHealthAPI.Controllers
                 return Request.EventTriggered( new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())))  , triggerState = DateTime.UtcNow.ToString("o"));
             }
         }
+
+        [HttpGet, Route("api/GetActivites")]
+        [Metadata("Get Activites", "Returns a set of activities and their data from Microsoft Health")]
+        public async Task<HttpResponseMessage> GetActivites(string startTime)
+        {
+            if(string.IsNullOrEmpty(startTime))
+                startTime = DateTime.UtcNow.AddDays(-1).ToString("o");
+
+            await tokenHandler.CheckToken();
+
+            if (authorization == null)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities/?startTime={1}", startTime));
+                
+            }
+
+        }
     }
 }
