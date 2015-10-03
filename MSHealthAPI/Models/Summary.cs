@@ -39,5 +39,16 @@ namespace MSHealthAPI.Models
         public string period { get; set; }
         public long totalDistance { get; set; }
         public long totalDistanceOnFoot { get; set; }
+
+        public long? actualDistance { get; set; }
+        public int? altitudeGain { get; set; }
+        public int? altitudeLoss { get; set; }
+        public int? maxAltitude { get; set; }
+        public int? minAltitude { get; set; }
+
+        public long? waypointDistance { get; set; }
+        public int? speed { get; set; }
+        public int? pace { get; set; }
+        public int? overallPace { get; set; }
     }
 }

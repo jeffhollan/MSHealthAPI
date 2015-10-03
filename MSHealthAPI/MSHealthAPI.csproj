@@ -144,7 +144,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Activity.cs" />
+    <Compile Include="Models\ActivityList.cs" />
+    <Compile Include="Models\BikeActivity.cs" />
+    <Compile Include="Models\FreePlayActivity.cs" />
+    <Compile Include="Models\GolfActivity.cs" />
+    <Compile Include="Models\GuidedWorkoutActivity.cs" />
     <Compile Include="Models\OAuthResponse.cs" />
+    <Compile Include="Models\RunActivity.cs" />
+    <Compile Include="Models\SleepActivity.cs" />
     <Compile Include="Models\Summary.cs" />
     <Compile Include="Models\SummaryResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
