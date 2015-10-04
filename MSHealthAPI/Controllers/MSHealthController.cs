@@ -23,29 +23,13 @@ namespace MSHealthAPI.Controllers
         private AuthenticationController tokenHandler = new AuthenticationController();
         //CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
-        [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
-        [HttpGet, Route("api/GetProfile")]
-        [Metadata("Get Profile", "Returns information about the current health user")]
-        private async Task<HttpResponseMessage> GetProfile()
-        {
-            if (authorization == null || authorization.access_token == null)
-                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
 
-            await tokenHandler.CheckToken();
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync("https://api.microsofthealth.net/v1/me/Profile");
-                return result;
-            }
-        }
 
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
         [HttpGet, Route("api/TriggerOnDeviceSync")]
         [Trigger(TriggerType.Poll, typeof(SummaryResponse))]
         [Metadata("Trigger on Device Sync", "On a device sync, will return hourly summaries up to sync hour")]
-        private async Task<HttpResponseMessage> TriggerOnDeviceSynce(string triggerState)
+        public async Task<HttpResponseMessage> TriggerOnDeviceSynce(string triggerState)
         {
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
@@ -64,10 +48,11 @@ namespace MSHealthAPI.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var deviceResult = await client.GetAsync("https://api.microsofthealth.net/v1/me//Devices");
-                Device devices = JsonConvert.DeserializeObject<Device>((await deviceResult.Content.ReadAsStringAsync()));
-                var lastSyncedBand = devices.deviceProfiles.FindAll(q => q.deviceFamily == "Band").OrderByDescending(q => q.lastSuccessfulSync).FirstOrDefault();
-                if (lastSyncedBand == null || lastSyncedBand.lastSuccessfulSync < DateTime.Parse(triggerState).ToUniversalTime())
+                var profileResult = await client.GetAsync("https://api.microsofthealth.net/v1/me/Profile");
+
+                var lastSyncedBand = DateTime.Parse(
+                    (string)JObject.Parse((await profileResult.Content.ReadAsStringAsync()))["lastUpdatedTime"]).ToUniversalTime();
+                if (lastSyncedBand == null || lastSyncedBand < DateTime.Parse(triggerState).ToUniversalTime())
                     return Request.EventWaitPoll(null, triggerState);
 
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", lastSyncedBand.lastSuccessfulSync.ToUniversalTime().ToString("o")));
@@ -186,6 +171,28 @@ namespace MSHealthAPI.Controllers
 
         }
 
-      
+
+        ///
+        /// Deprioritized for now - no big use case and don't want to expose this personal info on API that could be public by default
+        ///
+        //[Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
+        //[HttpGet, Route("api/GetProfile")]
+        //[Metadata("Get Profile", "Returns information about the current health user")]
+        //public async Task<HttpResponseMessage> GetProfile()
+        //{
+        //    if (authorization == null || authorization.access_token == null)
+        //        return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+
+        //    await tokenHandler.CheckToken();
+
+        //    using (var client = new HttpClient())
+        //    {
+        //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
+        //        var result = await client.GetAsync("https://api.microsofthealth.net/v1/me/Profile");
+        //        return result;
+        //    }
+        //}
+
+
     }
 }
