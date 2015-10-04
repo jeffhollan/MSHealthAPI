@@ -42,6 +42,40 @@ namespace MSHealthAPI.Controllers
         }
 
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
+        [HttpGet, Route("api/TriggerOnDeviceSync")]
+        [Trigger(TriggerType.Poll, typeof(SummaryResponse))]
+        [Metadata("Trigger on Device Sync", "On a device sync, will return hourly summaries up to sync hour")]
+        private async Task<HttpResponseMessage> TriggerOnDeviceSynce(string triggerState)
+        {
+            if (string.IsNullOrEmpty(triggerState))
+                triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
+            else
+            {
+                var triggerDate = DateTime.Parse(triggerState);
+                triggerState = triggerDate.ToUniversalTime().Add(TimeSpan.FromHours(-1)).ToString("o");
+            }
+
+            await tokenHandler.CheckToken();
+
+            if (authorization == null)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
+                var deviceResult = await client.GetAsync("https://api.microsofthealth.net/v1/me//Devices");
+                Device devices = JsonConvert.DeserializeObject<Device>((await deviceResult.Content.ReadAsStringAsync()));
+                var lastSyncedBand = devices.deviceProfiles.FindAll(q => q.deviceFamily == "Band").OrderByDescending(q => q.lastSuccessfulSync).FirstOrDefault();
+                if (lastSyncedBand == null || lastSyncedBand.lastSuccessfulSync < DateTime.Parse(triggerState).ToUniversalTime())
+                    return Request.EventWaitPoll(null, triggerState);
+
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", lastSyncedBand.lastSuccessfulSync.ToUniversalTime().ToString("o")));
+                    return Request.EventTriggered(new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), 1), triggerState = DateTime.UtcNow.ToString("o"));
+            }
+        }
+
+        [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
         [HttpGet, Route("api/GetHourlySummary")]
         [Trigger(TriggerType.Poll, typeof(SummaryResponse))]
         [Metadata("Get Hourly Summary")]

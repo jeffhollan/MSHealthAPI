@@ -153,6 +153,7 @@
     <Compile Include="Models\ActivityList.cs" />
     <Compile Include="Models\ActivityResponse.cs" />
     <Compile Include="Models\BikeActivity.cs" />
+    <Compile Include="Models\Device.cs" />
     <Compile Include="Models\FreePlayActivity.cs" />
     <Compile Include="Models\GolfActivity.cs" />
     <Compile Include="Models\GuidedWorkoutActivity.cs" />
