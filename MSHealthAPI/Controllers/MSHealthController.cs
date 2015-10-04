@@ -36,7 +36,7 @@ namespace MSHealthAPI.Controllers
             else
             {
                 var triggerDate = DateTime.Parse(triggerState);
-                triggerState = triggerDate.ToUniversalTime().Add(TimeSpan.FromHours(-1)).ToString("o");
+                triggerState = triggerDate.ToUniversalTime().ToString("o");
             }
 
             await tokenHandler.CheckToken();
@@ -56,7 +56,11 @@ namespace MSHealthAPI.Controllers
                     return Request.EventWaitPoll(null, triggerState);
 
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}&endTime={2}", "Hourly", triggerState, lastSyncedBand.ToUniversalTime().ToString("o")));
-                    return Request.EventTriggered(new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), 1, lastSyncedBand), triggerState = DateTime.UtcNow.ToString("o"));
+                var sumResponse = new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), 1, lastSyncedBand);
+                if (sumResponse.rows == null || sumResponse.rows.FirstOrDefault() == null)
+                    return Request.EventWaitPoll(null, triggerState);
+
+                return Request.EventTriggered(sumResponse, triggerState = DateTime.UtcNow.ToString("o"));
             }
         }
 
