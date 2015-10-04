@@ -43,7 +43,6 @@ namespace MSHealthAPI.Models
 
         public SummaryResponse(Summaries mshealthResponse, int delay, DateTime lastSyncedBand) : this(mshealthResponse, delay)
         {
-
             rows.RemoveAll(q => q.endTime > lastSyncedBand);
         }
     }

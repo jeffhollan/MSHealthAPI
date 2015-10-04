@@ -60,7 +60,7 @@ namespace MSHealthAPI.Controllers
                 if (sumResponse.rows == null || sumResponse.rows.FirstOrDefault() == null)
                     return Request.EventWaitPoll(null, triggerState);
 
-                return Request.EventTriggered(sumResponse, triggerState = DateTime.UtcNow.ToString("o"));
+                return Request.EventTriggered(sumResponse, triggerState = sumResponse.rows.First().endTime.ToUniversalTime().ToString("o"));
             }
         }
 
