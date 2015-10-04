@@ -118,7 +118,7 @@ namespace MSHealthAPI
         {
             protected override double ResolveCore(Activity source)
             {
-                return System.Xml.XmlConvert.ToTimeSpan(source.duration).TotalMinutes;
+                return Math.Round(System.Xml.XmlConvert.ToTimeSpan(source.duration).TotalMinutes);
             }
         }
 
@@ -127,7 +127,7 @@ namespace MSHealthAPI
             protected override double ResolveCore(string source)
             {
                 if(!string.IsNullOrEmpty(source))
-                    return System.Xml.XmlConvert.ToTimeSpan(source).TotalMinutes;
+                    return Math.Round(System.Xml.XmlConvert.ToTimeSpan(source).TotalMinutes);
 
                 return 0;
             }
