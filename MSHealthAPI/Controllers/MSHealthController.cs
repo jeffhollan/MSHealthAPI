@@ -94,18 +94,15 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", startTime));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                Mapper.CreateMap<ActivityList, ActivityResponse>();
-                Mapper.CreateMap<RunActivity, RunResponse>();
-                var resultResponse = Mapper.Map<ActivityResponse>(resultList);
-                return Request.CreateResponse(HttpStatusCode.OK, new StringContent(JsonConvert.SerializeObject(resultResponse)), "application/json");
+                resultList.RemoveActive();
+                return Request.CreateResponse<ActivityResponse>(HttpStatusCode.OK, FlattenResult(resultList));
             }
 
         }
 
 
-        public async Task<HttpResponseMessage> TestMapper()
+        private ActivityResponse FlattenResult(ActivityList resultList)
         {
-            ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(testJson);
 
             ActivityResponse result = new ActivityResponse();
             result.runActivites = Mapper.Map<List<RunActivity>, List<RunResponse>>(resultList.runActivities);
@@ -114,81 +111,10 @@ namespace MSHealthAPI.Controllers
             result.golfActivities = Mapper.Map<List<GolfActivity>, List<GolfResponse>>(resultList.golfActivities);
             result.guidedWorkoutActivities = Mapper.Map<List<GuidedWorkoutActivity>, List<GuidedWorkoutResponse>>(resultList.guidedWorkoutActivities);
             result.sleepActivities = Mapper.Map<List<SleepActivity>, List<SleepResponse>>(resultList.sleepActivities);
-
-            return Request.CreateResponse<ActivityResponse>(result);
+            return result;
 
         }
 
-
-        private string testJson = @"{
-	""freePlayActivities"": [
-		{
-			""activityType"": ""FreePlay"",
-			""performanceSummary"": {
-				""finishHeartRate"": 68,
-				""recoveryHeartRateAt1Minute"": 68,
-				""heartRateZones"": {
-					""underAerobic"": 103,
-					""aerobic"": 4,
-					""fitnessZone"": 9,
-					""healthyHeart"": 22
-				}
-			},
-			""id"": ""2519584076252247969"",
-			""startTime"": ""2015-10-03T17:26:14.775+00:00"",
-			""endTime"": ""2015-10-03T19:42:59.775+00:00"",
-			""dayId"": ""2015-10-03T00:00:00.000+00:00"",
-			""duration"": ""PT2H16M45S"",
-			""caloriesBurnedSummary"": {
-				""period"": ""Activity"",
-				""totalCalories"": 467
-			},
-			""heartRateSummary"": {
-				""period"": ""Activity"",
-				""averageHeartRate"": 82,
-				""peakHeartRate"": 143,
-				""lowestHeartRate"": 55
-			}
-		}
-	],
-	""runActivities"": [
-		{
-			""activityType"": ""Run"",
-			""performanceSummary"": {
-				""finishHeartRate"": 92,
-				""heartRateZones"": {
-					""underAerobic"": 3,
-					""healthyHeart"": 1
-				}
-			},
-			""distanceSummary"": {
-				""period"": ""Activity"",
-				""totalDistance"": 8554,
-				""actualDistance"": 8554,
-				""elevationGain"": 266,
-				""elevationLoss"": 129,
-				""waypointDistance"": 2500,
-				""pace"": 1874000
-			},
-			""splitDistance"": 160934,
-			""id"": ""2519584593959552223"",
-			""startTime"": ""2015-10-03T03:03:24.044+00:00"",
-			""endTime"": ""2015-10-03T03:06:04.044+00:00"",
-			""dayId"": ""2015-10-02T00:00:00.000+00:00"",
-			""duration"": ""PT2M40S"",
-			""caloriesBurnedSummary"": {
-				""period"": ""Activity"",
-				""totalCalories"": 8
-			},
-			""heartRateSummary"": {
-				""period"": ""Activity"",
-				""averageHeartRate"": 92,
-				""peakHeartRate"": 98,
-				""lowestHeartRate"": 80
-			}
-		}
-	],
-	""itemCount"": 2
-}";
+      
     }
 }
