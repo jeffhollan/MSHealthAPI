@@ -45,7 +45,8 @@ namespace MSHealthAPI.Controllers
         [HttpGet, Route("api/GetHourlySummary")]
         [Trigger(TriggerType.Poll, typeof(SummaryResponse))]
         [Metadata("Get Hourly Summary")]
-        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState)
+        public async Task<HttpResponseMessage> GetHourlySummary(string triggerState, 
+            [Metadata("Delay", "How many hours to delay results. This is to help offset the time it takes to sync with your band.", VisibilityType.Advanced)] int delay = 1)
         { 
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
@@ -56,7 +57,7 @@ namespace MSHealthAPI.Controllers
                 {
                     return Request.EventWaitPoll(TimeSpan.FromMinutes((60 - DateTime.UtcNow.Minute)), triggerState = triggerDate.ToUniversalTime().ToString("o"));
                 }
-                triggerState = triggerDate.ToUniversalTime().Add(TimeSpan.FromHours(-1)).ToString("o");
+                triggerState = triggerDate.ToUniversalTime().Add(TimeSpan.FromHours(-1 * delay)).ToString("o");
             }
 
             await tokenHandler.CheckToken();
@@ -69,7 +70,7 @@ namespace MSHealthAPI.Controllers
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", triggerState));
-                return Request.EventTriggered( new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())))  , triggerState = DateTime.UtcNow.ToString("o"));
+                return Request.EventTriggered( new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), delay)  , triggerState = DateTime.UtcNow.ToString("o"));
             }
         }
 

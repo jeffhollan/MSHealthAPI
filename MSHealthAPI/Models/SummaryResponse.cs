@@ -11,12 +11,12 @@ namespace MSHealthAPI.Models
     {
         public List<TabularSummary> rows { get; set; }
 
-        public SummaryResponse(Summaries mshealthResponse)
+        public SummaryResponse(Summaries mshealthResponse, int delay)
         {
             rows = new List<TabularSummary>();
             foreach (var summary in mshealthResponse.summaries)
             {
-                if (DateTime.Parse(summary.endTime) < DateTime.UtcNow)
+                if (DateTime.Parse(summary.endTime) < DateTime.UtcNow.AddHours((-1) * (1 - delay)))
                 {
                     rows.Add(new TabularSummary
                     {
