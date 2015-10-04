@@ -9,7 +9,7 @@ namespace MSHealthAPI.Models
 {
     public class SummaryResponse
     {
-        private DateTime previousTriggerState;
+        public DateTime previousTriggerState { get; set; }
 
         public List<TabularSummary> rows { get; set; }
 
