@@ -76,12 +76,13 @@ namespace MSHealthAPI.Controllers
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.OK, "MSHealth Activity Result", typeof(ActivityResponse))]
         [HttpGet, Route("api/GetActivites")]
         [Metadata("Get Activites", "Returns a set of activities and their data from Microsoft Health")]
-        public async Task<HttpResponseMessage> GetActivites(string startTime)
+        public async Task<HttpResponseMessage> GetActivites( [Metadata("Activities After Time", "Will return all activities that ended after the time passed in.")] string activityTime)
         {
-            if (string.IsNullOrEmpty(startTime))
+            string startTime;
+            if (string.IsNullOrEmpty(activityTime))
                 startTime = DateTime.UtcNow.AddDays(-1).ToString("o");
             else
-                startTime = DateTime.Parse(startTime).ToUniversalTime().ToString("o");
+                startTime = DateTime.Parse(activityTime).ToUniversalTime().AddDays(-1).ToString("o");
 
             await tokenHandler.CheckToken();
 
@@ -94,7 +95,7 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", startTime));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                //resultList.RemoveActive();
+                resultList.RemoveActive(DateTime.Parse(activityTime).ToUniversalTime());
                 return Request.CreateResponse<ActivityResponse>(HttpStatusCode.OK, FlattenResult(resultList));
             }
 

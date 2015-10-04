@@ -15,31 +15,22 @@ namespace MSHealthAPI.Models
         public List<GolfActivity> golfActivities { get; set; }
         public List<SleepActivity> sleepActivities { get; set; }
 
-        internal void RemoveActive()
+        internal void RemoveActive(DateTime parameter)
         {
-            foreach (var activity in runActivities)
-                if (activity.endTime == null)
-                    runActivities.Remove(activity);
-
-            foreach (var activity in bikeActivities)
-                if (activity.endTime == null)
-                    bikeActivities.Remove(activity);
-
-            foreach (var activity in sleepActivities)
-                if (activity.endTime == null)
-                    sleepActivities.Remove(activity);
-
-            foreach (var activity in freePlayActivities)
-                if (activity.endTime == null)
-                    freePlayActivities.Remove(activity);
-
-            foreach (var activity in guidedWorkoutActivities)
-                if (activity.endTime == null)
-                    guidedWorkoutActivities.Remove(activity);
-
-            foreach (var activity in golfActivities)
-                if (activity.endTime == null)
-                    golfActivities.Remove(activity);
+            if (runActivities != null)
+                runActivities.RemoveAll(a => a.endTime <= parameter);
+            if (bikeActivities != null)
+                bikeActivities.RemoveAll(a => a.endTime <= parameter);
+            if (freePlayActivities != null)
+                freePlayActivities.RemoveAll(a => a.endTime <= parameter);
+            if (guidedWorkoutActivities != null)
+                guidedWorkoutActivities.RemoveAll(a => a.endTime <= parameter);
+            if (golfActivities != null)
+                golfActivities.RemoveAll(a => a.endTime <= parameter);
+            if (sleepActivities != null)
+                sleepActivities.RemoveAll(a => a.endTime <= parameter);
         }
+
+        
     }
 }
