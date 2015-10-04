@@ -53,7 +53,7 @@ namespace MSHealthAPI.Controllers
             }
         }
 
-        public async Task CheckToken()
+        internal async Task CheckToken()
         {
             if (MSHealthController.authorization == null)
                 MSHealthController.authorization = await ReadTokenFromStorage();

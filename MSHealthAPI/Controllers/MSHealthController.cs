@@ -73,6 +73,38 @@ namespace MSHealthAPI.Controllers
             }
         }
 
+        [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.Unauthorized, "You have not yet authorized.  Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.")]
+        [HttpGet, Route("api/TriggerOnActivity")]
+        [Trigger(TriggerType.Poll, typeof(ActivityResponse))]
+        [Metadata("Trigger on Activity")]
+        public async Task<HttpResponseMessage> TriggerOnActivity(string triggerState)
+        {
+            if (string.IsNullOrEmpty(triggerState))
+                triggerState = DateTime.UtcNow.ToString("o");
+            else
+            {
+                triggerState = DateTime.Parse(triggerState).ToUniversalTime().ToString("o");
+            }
+
+            await tokenHandler.CheckToken();
+
+            if (authorization == null)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", triggerState));
+                string content = await result.Content.ReadAsStringAsync();
+                ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
+                if (resultList.NoActivities())
+                    return Request.EventWaitPoll(null, triggerState);
+                else
+                    return Request.EventTriggered(FlattenResult(resultList), DateTime.UtcNow.ToString("o"));
+            }
+        }
+
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.OK, "MSHealth Activity Result", typeof(ActivityResponse))]
         [HttpGet, Route("api/GetActivites")]
         [Metadata("Get Activites", "Returns a set of activities and their data from Microsoft Health")]
@@ -95,7 +127,7 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", startTime));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                resultList.RemoveActive(DateTime.Parse(activityTime).ToUniversalTime());
+                resultList.EndTimeInclusive(DateTime.Parse(activityTime).ToUniversalTime());
                 return Request.CreateResponse<ActivityResponse>(HttpStatusCode.OK, FlattenResult(resultList));
             }
 

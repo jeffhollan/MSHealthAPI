@@ -15,7 +15,7 @@ namespace MSHealthAPI.Models
         public List<GolfActivity> golfActivities { get; set; }
         public List<SleepActivity> sleepActivities { get; set; }
 
-        internal void RemoveActive(DateTime parameter)
+        internal void EndTimeInclusive(DateTime parameter)
         {
             if (runActivities != null)
                 runActivities.RemoveAll(a => a.endTime <= parameter);
@@ -31,6 +31,12 @@ namespace MSHealthAPI.Models
                 sleepActivities.RemoveAll(a => a.endTime <= parameter);
         }
 
-        
+        internal bool NoActivities()
+        {
+            if (runActivities == null && bikeActivities == null && freePlayActivities == null && guidedWorkoutActivities == null && golfActivities == null && sleepActivities == null)
+                return true;
+            else
+                return false;
+        }
     }
 }
