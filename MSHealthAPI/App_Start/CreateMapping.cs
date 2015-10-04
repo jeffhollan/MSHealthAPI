@@ -40,6 +40,8 @@ namespace MSHealthAPI
                 .ForMember(d => d.peakHeartRate, o => o.MapFrom(s => s.heartRateSummary.peakHeartRate))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.heartRateSummary.period))
                 .ForMember(d => d.totalCalories, o => o.MapFrom(s => s.caloriesBurnedSummary.totalCalories));
+
+
                 cfg.CreateMap<BikeActivity, BikeResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.finishHeartRate, o => o.MapFrom(s => s.performanceSummary.finishHeartRate))
@@ -68,6 +70,8 @@ namespace MSHealthAPI
                 .ForMember(d => d.peakHeartRate, o => o.MapFrom(s => s.heartRateSummary.peakHeartRate))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.heartRateSummary.period))
                 .ForMember(d => d.totalCalories, o => o.MapFrom(s => s.caloriesBurnedSummary.totalCalories));
+
+
                 cfg.CreateMap<FreePlayActivity, FreePlayResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.averageHeartRate, o => o.MapFrom(s => s.heartRateSummary.averageHeartRate))
@@ -75,6 +79,8 @@ namespace MSHealthAPI
                 .ForMember(d => d.peakHeartRate, o => o.MapFrom(s => s.heartRateSummary.peakHeartRate))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.heartRateSummary.period))
                 .ForMember(d => d.totalCalories, o => o.MapFrom(s => s.caloriesBurnedSummary.totalCalories));
+
+
                 cfg.CreateMap<GuidedWorkoutActivity, GuidedWorkoutResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.averageHeartRate, o => o.MapFrom(s => s.heartRateSummary.averageHeartRate))
@@ -82,6 +88,8 @@ namespace MSHealthAPI
                 .ForMember(d => d.peakHeartRate, o => o.MapFrom(s => s.heartRateSummary.peakHeartRate))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.heartRateSummary.period))
                 .ForMember(d => d.totalCalories, o => o.MapFrom(s => s.caloriesBurnedSummary.totalCalories));
+
+
                 cfg.CreateMap<GolfActivity, GolfResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.averageHeartRate, o => o.MapFrom(s => s.heartRateSummary.averageHeartRate))
@@ -89,6 +97,8 @@ namespace MSHealthAPI
                 .ForMember(d => d.peakHeartRate, o => o.MapFrom(s => s.heartRateSummary.peakHeartRate))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.heartRateSummary.period))
                 .ForMember(d => d.totalCalories, o => o.MapFrom(s => s.caloriesBurnedSummary.totalCalories));
+
+
                 cfg.CreateMap<SleepActivity, SleepResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.fallAsleepDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.fallAsleepDuration))
