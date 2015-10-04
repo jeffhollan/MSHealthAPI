@@ -9,7 +9,7 @@ namespace MSHealthAPI.Models
     {
         public List<RunActivity> runActivities { get; set; }
         public List<BikeActivity> bikeActivities { get; set; }
-        public List<FreePlayActivity> freePlayActivites { get; set; }
+        public List<FreePlayActivity> freePlayActivities { get; set; }
         public List<GuidedWorkoutActivity> guidedWorkoutActivities { get; set; }
 
         public List<GolfActivity> golfActivities { get; set; }

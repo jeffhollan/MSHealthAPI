@@ -107,8 +107,15 @@ namespace MSHealthAPI.Controllers
         {
             ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(testJson);
 
-            var result = Mapper.Map<RunResponse>(resultList.runActivities.FirstOrDefault());
-            return Request.CreateResponse<RunResponse>(result);
+            ActivityResponse result = new ActivityResponse();
+            result.runActivites = Mapper.Map<List<RunActivity>, List<RunResponse>>(resultList.runActivities);
+            result.bikeActivities = Mapper.Map<List<BikeActivity>, List<BikeResponse>>(resultList.bikeActivities);
+            result.freePlayActivites = Mapper.Map<List<FreePlayActivity>, List<FreePlayResponse>>(resultList.freePlayActivities);
+            result.golfActivities = Mapper.Map<List<GolfActivity>, List<GolfResponse>>(resultList.golfActivities);
+            result.guidedWorkoutActivities = Mapper.Map<List<GuidedWorkoutActivity>, List<GuidedWorkoutResponse>>(resultList.guidedWorkoutActivities);
+            result.sleepActivities = Mapper.Map<List<SleepActivity>, List<SleepResponse>>(resultList.sleepActivities);
+
+            return Request.CreateResponse<ActivityResponse>(result);
 
         }
 
