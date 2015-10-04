@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.AppService.ApiApps.Service;
+﻿using AutoMapper;
+using Microsoft.Azure.AppService.ApiApps.Service;
 using MSHealthAPI.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -72,6 +73,7 @@ namespace MSHealthAPI.Controllers
             }
         }
 
+        [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.OK, "MSHealth Activity Result", typeof(ActivityResponse))]
         [HttpGet, Route("api/GetActivites")]
         [Metadata("Get Activites", "Returns a set of activities and their data from Microsoft Health")]
         public async Task<HttpResponseMessage> GetActivites(string startTime)
@@ -88,7 +90,10 @@ namespace MSHealthAPI.Controllers
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities/?startTime={1}", startTime));
-                
+                ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>((await result.Content.ReadAsStringAsync()));
+                Mapper.CreateMap<ActivityList, ActivityResponse>();
+                var resultResponse = Mapper.Map<ActivityResponse>(resultList);
+                return Request.CreateResponse(HttpStatusCode.OK, new StringContent(JsonConvert.SerializeObject(resultResponse)));
             }
 
         }
