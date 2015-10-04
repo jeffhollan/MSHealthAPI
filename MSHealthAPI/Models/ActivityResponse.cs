@@ -75,13 +75,13 @@ namespace MSHealthAPI.Models
 
     public class SleepResponse : AbstractActivityResponse
     {
-        public string awakeDuration { get; set; }
-        public string sleepDuration { get; set; }
+        public double awakeDuration { get; set; }
+        public double sleepDuration { get; set; }
         public int? numberOfWakeups { get; set; }
-        public string fallAsleepDuration { get; set; }
+        public double fallAsleepDuration { get; set; }
         public int? sleepEfficiencyPercentage { get; set; }
-        public string totalRestlessSleepDuration { get; set; }
-        public string totalRestfulSleepDuration { get; set; }
+        public double totalRestlessSleepDuration { get; set; }
+        public double totalRestfulSleepDuration { get; set; }
         public int? restingHeartRate { get; set; }
         public DateTime fallAsleepTime { get; set; }
         public DateTime wakeupTime { get; set; }

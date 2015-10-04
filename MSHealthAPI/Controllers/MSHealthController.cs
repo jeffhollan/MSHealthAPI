@@ -94,7 +94,7 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", startTime));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                resultList.RemoveActive();
+                //resultList.RemoveActive();
                 return Request.CreateResponse<ActivityResponse>(HttpStatusCode.OK, FlattenResult(resultList));
             }
 

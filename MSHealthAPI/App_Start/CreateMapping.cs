@@ -92,6 +92,7 @@ namespace MSHealthAPI
                 cfg.CreateMap<SleepActivity, SleepResponse>()
                 .ForMember(d => d.duration, o => o.ResolveUsing<DurationResolver>())
                 .ForMember(d => d.fallAsleepDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.fallAsleepDuration))
+                .ForMember(d => d.awakeDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.awakeDuration))
                 .ForMember(d => d.sleepDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.sleepDuration))
                 .ForMember(d => d.totalRestfulSleepDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.totalRestfulSleepDuration))
                 .ForMember(d => d.totalRestlessSleepDuration, o => o.ResolveUsing<GenericDurationResolver>().FromMember(s => s.totalRestlessSleepDuration))
@@ -115,7 +116,10 @@ namespace MSHealthAPI
         {
             protected override double ResolveCore(string source)
             {
-                return System.Xml.XmlConvert.ToTimeSpan(source).TotalMinutes;
+                if(!string.IsNullOrEmpty(source))
+                    return System.Xml.XmlConvert.ToTimeSpan(source).TotalMinutes;
+
+                return 0;
             }
         }
     }
