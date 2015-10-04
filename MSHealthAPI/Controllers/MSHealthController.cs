@@ -108,13 +108,16 @@ namespace MSHealthAPI.Controllers
         [Swashbuckle.Swagger.Annotations.SwaggerResponse(HttpStatusCode.OK, "MSHealth Activity Result", typeof(ActivityResponse))]
         [HttpGet, Route("api/GetActivites")]
         [Metadata("Get Activites", "Returns a set of activities and their data from Microsoft Health")]
-        public async Task<HttpResponseMessage> GetActivites( [Metadata("Activities After Time", "Will return all activities that ended after the time passed in.")] string activityTime)
+        public async Task<HttpResponseMessage> GetActivites( [Metadata("Activities After Time", "Will return all activities that ended after the time passed in.")] string activityTime, 
+            [Required(AllowEmptyStrings = true)][Metadata("Activites Before Time", "An end-time cap into the activities returned", VisibilityType.Advanced)] string endTime = null)
         {
             string startTime;
             if (string.IsNullOrEmpty(activityTime))
                 startTime = DateTime.UtcNow.AddDays(-1).ToString("o");
             else
                 startTime = DateTime.Parse(activityTime).ToUniversalTime().AddDays(-1).ToString("o");
+
+            endTime = (string.IsNullOrEmpty(endTime)) ? DateTime.UtcNow.ToString("o") : DateTime.Parse(endTime).ToUniversalTime().ToString("o");
 
             await tokenHandler.CheckToken();
 
@@ -127,7 +130,7 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", startTime));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                resultList.EndTimeInclusive(DateTime.Parse(activityTime).ToUniversalTime());
+                resultList.EndTimeInclusive(DateTime.Parse(activityTime).ToUniversalTime(), DateTime.Parse(endTime).ToUniversalTime());
                 return Request.CreateResponse<ActivityResponse>(HttpStatusCode.OK, FlattenResult(resultList));
             }
 

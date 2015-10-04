@@ -15,20 +15,20 @@ namespace MSHealthAPI.Models
         public List<GolfActivity> golfActivities { get; set; }
         public List<SleepActivity> sleepActivities { get; set; }
 
-        internal void EndTimeInclusive(DateTime parameter)
+        internal void EndTimeInclusive(DateTime startTime, DateTime endTime)
         {
             if (runActivities != null)
-                runActivities.RemoveAll(a => a.endTime <= parameter);
+                runActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
             if (bikeActivities != null)
-                bikeActivities.RemoveAll(a => a.endTime <= parameter);
+                bikeActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
             if (freePlayActivities != null)
-                freePlayActivities.RemoveAll(a => a.endTime <= parameter);
+                freePlayActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
             if (guidedWorkoutActivities != null)
-                guidedWorkoutActivities.RemoveAll(a => a.endTime <= parameter);
+                guidedWorkoutActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
             if (golfActivities != null)
-                golfActivities.RemoveAll(a => a.endTime <= parameter);
+                golfActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
             if (sleepActivities != null)
-                sleepActivities.RemoveAll(a => a.endTime <= parameter);
+                sleepActivities.RemoveAll(a => (a.endTime < startTime || a.endTime > endTime));
         }
 
         internal bool NoActivities()
@@ -38,5 +38,6 @@ namespace MSHealthAPI.Models
             else
                 return false;
         }
+
     }
 }
