@@ -8,9 +8,9 @@ namespace MSHealthAPI.Models
     public class Summary
     {
         public string userId { get; set; }
-        public string startTime { get; set; }
-        public string endTime { get; set; }
-        public string parentDay { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+        public DateTime parentDay { get; set; }
         public bool isTransitDay { get; set; }
         public string period { get; set; }
         public string duration { get; set; }
