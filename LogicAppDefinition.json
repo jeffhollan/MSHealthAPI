@@ -1,0 +1,258 @@
+{
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2014-12-01-preview/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "msHealthToken": {
+              "defaultValue": "[reference(resourceId('Microsoft.AppService/gateways/tokens', parameters('gatewayName'), parameters('MSapiAppName'))).token]",
+              "type": "String",
+              "metadata": {
+                "token": {
+                  "name": "msHealthToken"
+                }
+              }
+            },
+		"powerBIToken": {
+              "defaultValue": "[reference(resourceId('Microsoft.AppService/gateways/tokens', parameters('gatewayName'), parameters('PBIapiAppName'))).token]",
+              "type": "String",
+              "metadata": {
+                "token": {
+                  "name": "powerBIToken"
+                }
+              }
+            }
+			
+
+    },
+    "triggers": {
+        "MSHealthAPI": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('MSapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "GetHourlySummary",
+                "parameters": {
+                    "triggerState": "@coalesce(triggers()?.outputs?.body?['triggerState'],'')"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('msHealthToken')"
+                }
+            },
+            "recurrence": {
+                "frequency": "Minute",
+                "interval": 15
+            },
+            "conditions": []
+        }
+    },
+    "actions": {
+        "MSHealthAPI0": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('MSapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "GetActivites",
+                "parameters": {
+                    "activityTime": "@{first(triggers().outputs.body.rows).startTime}",
+                    "endTime": "@{first(triggers().outputs.body.rows).endTime}"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('msHealthToken')"
+                }
+            },
+            "conditions": []
+        },
+        "powerbiapi": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "Summary",
+                    "rows": "@string(triggers().outputs.body.rows)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(triggers()))"
+                }
+            ]
+        },
+        "powerbiapi0": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "RunActivites",
+                    "rows": "@string(body('MSHealthAPI0').runActivites)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').runActivites))"
+                }
+            ]
+        },
+        "powerbiapi1": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "BikeActivities",
+                    "rows": "@string(body('MSHealthAPI0').bikeActivities)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').bikeActivities))"
+                }
+            ]
+        },
+        "powerbiapi2": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "FreePlayActivities",
+                    "rows": "@string(body('MSHealthAPI0').freePlayActivites)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').freePlayActivites))"
+                }
+            ]
+        },
+        "powerbiapi3": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "GuidedWorkoutActivities",
+                    "rows": "@string(body('MSHealthAPI0').guidedWorkoutActivities)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').guidedWorkoutActivities))"
+                }
+            ]
+        },
+        "powerbiapi4": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "GolfActivities",
+                    "rows": "@string(body('MSHealthAPI0').golfActivities)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').golfActivities))"
+                }
+            ]
+        },
+        "powerbiapi5": {
+            "type": "ApiApp",
+            "inputs": {
+                "apiVersion": "2015-01-14",
+                "host": {
+                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.AppServices/apiApps/',parameters('PBIapiAppName'))]",
+                    "gateway": "[concat('https://', reference(resourceId('Microsoft.Web/sites', parameters('gatewayName'))).hostNames[0])]"
+                },
+                "operation": "AddRows(String)",
+                "parameters": {
+                    "datasetId": "[parameters('datasetid')]",
+                    "table": "SleepActivities",
+                    "rows": "@string(body('MSHealthAPI0').sleepActivities)"
+                },
+                "authentication": {
+                    "type": "Raw",
+                    "scheme": "Zumo",
+                    "parameter": "@parameters('powerBIToken')"
+                }
+            },
+            "conditions": [
+                {
+                    "expression": "@not(empty(body('MSHealthAPI0').sleepActivities))"
+                }
+            ]
+        }
+    },
+    "outputs": {}
+}

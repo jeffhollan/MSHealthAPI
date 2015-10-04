@@ -46,7 +46,7 @@ namespace MSHealthAPI.Controllers
         [Trigger(TriggerType.Poll, typeof(SummaryResponse))]
         [Metadata("Get Hourly Summary")]
         public async Task<HttpResponseMessage> GetHourlySummary(string triggerState, 
-            [Metadata("Delay", "How many hours to delay results. This is to help offset the time it takes to sync with your band.", VisibilityType.Advanced)] int delay = 1)
+            [Metadata("Delay", "How many hours to delay results. This is to help offset the time it takes to sync with your band.  Defaults to 1, must be >= 1.", VisibilityType.Advanced)] int delay = 1)
         { 
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
