@@ -4,9 +4,9 @@
 "name": "Summary",
 "columns" : [
 	{"name": "userId", "dataType": "string"},
-	{"name": "startTime", "dataType": "string"},
-	{"name": "endTime", "dataType": "string"},
-	{"name": "parentDay", "dataType": "string"},
+	{"name": "startTime", "dataType": "DateTime"},
+	{"name": "endTime", "dataType": "DateTime"},
+	{"name": "parentDay", "dataType": "DateTime"},
 	{"name": "isTransitDay", "dataType": "boolean"},
 	{"name": "period", "dataType": "string"},
 	{"name": "duration", "dataType": "string"},
@@ -19,7 +19,7 @@
 	{"name": "totalDistanceOnFoot", "dataType": "Int64"}
 ]},
 {
-"name": "RunActivites",
+"name": "RunActivities",
 "columns" : [
 	{ "name" : "pausedDuration", "dataType": "string"},
 	{ "name" : "splitDistance", "dataType": "Int64"},
