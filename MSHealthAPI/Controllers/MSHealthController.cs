@@ -106,9 +106,8 @@ namespace MSHealthAPI.Controllers
         public async Task<HttpResponseMessage> TestMapper()
         {
             ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(testJson);
-            string RunResultString = JsonConvert.SerializeObject(resultList.runActivities.FirstOrDefault());
-            var result = JsonConvert.DeserializeObject<RunResponse>(RunResultString);
-            //var result = Mapper.Map<RunResponse>(resultList.runActivities.FirstOrDefault());
+
+            var result = Mapper.Map<RunResponse>(resultList.runActivities.FirstOrDefault());
             return Request.CreateResponse<RunResponse>(result);
 
         }

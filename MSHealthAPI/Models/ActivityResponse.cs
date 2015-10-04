@@ -31,7 +31,7 @@ namespace MSHealthAPI.Models
         public DateTime createdTime { get; set; }
         public string createdBy { get; set; }
         public string name { get; set; }
-        public string duration { get; set; }
+        public double duration { get; set; }
         public string period { get; set; }
         public int averageHeartRate { get; set; }
         public int peakHeartRate { get; set; }
