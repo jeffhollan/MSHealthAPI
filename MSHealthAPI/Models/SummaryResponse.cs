@@ -9,7 +9,7 @@ namespace MSHealthAPI.Models
 {
     public class SummaryResponse
     {
-        private DateTime lastSyncedBand;
+        private DateTime previousTriggerState;
 
         public List<TabularSummary> rows { get; set; }
 
@@ -44,6 +44,7 @@ namespace MSHealthAPI.Models
         public SummaryResponse(Summaries mshealthResponse, int delay, DateTime lastSyncedBand) : this(mshealthResponse, delay)
         {
             rows.RemoveAll(q => q.endTime > lastSyncedBand);
+            previousTriggerState = lastSyncedBand;
         }
     }
 
