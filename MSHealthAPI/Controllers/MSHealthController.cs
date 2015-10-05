@@ -165,9 +165,9 @@ namespace MSHealthAPI.Controllers
         {
 
             ActivityResponse result = new ActivityResponse();
-            result.runActivites = Mapper.Map<List<RunActivity>, List<RunResponse>>(resultList.runActivities);
+            result.runActivities = Mapper.Map<List<RunActivity>, List<RunResponse>>(resultList.runActivities);
             result.bikeActivities = Mapper.Map<List<BikeActivity>, List<BikeResponse>>(resultList.bikeActivities);
-            result.freePlayActivites = Mapper.Map<List<FreePlayActivity>, List<FreePlayResponse>>(resultList.freePlayActivities);
+            result.freePlayActivities = Mapper.Map<List<FreePlayActivity>, List<FreePlayResponse>>(resultList.freePlayActivities);
             result.golfActivities = Mapper.Map<List<GolfActivity>, List<GolfResponse>>(resultList.golfActivities);
             result.guidedWorkoutActivities = Mapper.Map<List<GuidedWorkoutActivity>, List<GuidedWorkoutResponse>>(resultList.guidedWorkoutActivities);
             result.sleepActivities = Mapper.Map<List<SleepActivity>, List<SleepResponse>>(resultList.sleepActivities);

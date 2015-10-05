@@ -8,9 +8,9 @@ namespace MSHealthAPI.Models
 {
     public class ActivityResponse
     {
-        public List<RunResponse> runActivites { get; set; }
+        public List<RunResponse> runActivities { get; set; }
         public List<BikeResponse> bikeActivities { get; set; }
-        public List<FreePlayResponse> freePlayActivites { get; set; }
+        public List<FreePlayResponse> freePlayActivities { get; set; }
         public List<GuidedWorkoutResponse> guidedWorkoutActivities { get; set; }
 
         public List<GolfResponse> golfActivities { get; set; }
