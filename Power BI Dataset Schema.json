@@ -1,5 +1,5 @@
 {
-  "name": "LogicAppsMSHealth", "tables":
+  "name": "LogicAppsHealth", "tables":
 [{
 "name": "Summary",
 "columns" : [
