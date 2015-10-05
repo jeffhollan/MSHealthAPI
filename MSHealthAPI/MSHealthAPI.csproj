@@ -166,7 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="apiapp.json" />
-    <Content Include="keys.config" />
     <Content Include="index.cshtml" />
     <None Include="Properties\PublishProfiles\MSHealthAPITest2%28premium%29 %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\MSHealthAPITest2%28premium%29.pubxml" />
