@@ -21,6 +21,8 @@ namespace MSHealthAPI.Controllers
     {
         public static OAuthResponse authorization;
         private AuthenticationController tokenHandler = new AuthenticationController();
+        internal static TimeSpan timezoneOffset;
+
         //CloudIsolatedStorage storage = Runtime.FromAppSettings().IsolatedStorage;
 
 
@@ -32,6 +34,7 @@ namespace MSHealthAPI.Controllers
         public async Task<HttpResponseMessage> TriggerOnDeviceSynce(string triggerState,
             [Metadata("Timezone Offset", "Timezone offset for desired return time (e.g. -7 for Pacific Daylight Time)", VisibilityType.Default)] int offset = 0)
         {
+            timezoneOffset = new TimeSpan(offset, 0, 0);
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
             else
@@ -72,7 +75,8 @@ namespace MSHealthAPI.Controllers
         public async Task<HttpResponseMessage> GetHourlySummary(string triggerState,
             [Metadata("Timezone Offset", "Timezone offset for desired return time (e.g. -7 for Pacific Daylight Time)", VisibilityType.Default)] int offset = 0,
             [Metadata("Delay", "How many hours to delay results. This is to help offset the time it takes to sync with your band.  Defaults to 1, must be >= 1.", VisibilityType.Advanced)] int delay = 1)
-        { 
+        {
+            timezoneOffset = new TimeSpan(offset, 0, 0);
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.AddDays(-1).ToString("o");
             else
@@ -106,6 +110,7 @@ namespace MSHealthAPI.Controllers
         public async Task<HttpResponseMessage> TriggerOnActivity(string triggerState,
             [Metadata("Timezone Offset", "Timezone offset for desired return time (e.g. -7 for Pacific Daylight Time)", VisibilityType.Default)] int offset = 0)
         {
+            timezoneOffset = new TimeSpan(offset, 0, 0);
             if (string.IsNullOrEmpty(triggerState))
                 triggerState = DateTime.UtcNow.ToString("o");
             else
@@ -139,6 +144,7 @@ namespace MSHealthAPI.Controllers
             [Metadata("Timezone Offset", "Timezone offset for desired return time (e.g. -7 for Pacific Daylight Time)", VisibilityType.Default)] int offset = 0,
             [Required(AllowEmptyStrings = true)][Metadata("Activites Before Time", "An end-time cap into the activities returned", VisibilityType.Advanced)] string endTime = null)
         {
+            timezoneOffset = new TimeSpan(offset, 0, 0);
             string startTime;
             if (string.IsNullOrEmpty(activityTime))
                 startTime = DateTime.UtcNow.AddDays(-1).ToString("o");
