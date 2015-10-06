@@ -178,7 +178,7 @@
 "columns" : [
 	{"name": "awakeDuration", "dataType": "double"},
 	{"name": "sleepDuration", "dataType": "double"},
-	{"name": "doubleOfWakeups", "dataType": "Int64"},
+	{"name": "numberOfWakeups", "dataType": "Int64"},
 	{"name": "fallAsleepDuration", "dataType": "double"},
 	{"name": "sleepEfficiencyPercentage", "dataType": "Int64"},
 	{"name": "totalRestlessSleepDuration", "dataType": "double"},
