@@ -59,7 +59,7 @@ namespace MSHealthAPI.Controllers
                 if (lastSyncedBand == null || lastSyncedBand < DateTime.Parse(triggerState).ToUniversalTime())
                     return Request.EventWaitPoll(null, triggerState);
 
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}&endTime={2}", "Hourly", DateTimeOffset.Parse(triggerState).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o"), DateTimeOffset.Parse(lastSyncedBand.ToUniversalTime().ToString("o")).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}&endTime={2}", "Hourly", DateTime.Parse(triggerState).ToUniversalTime().ToString("o"),lastSyncedBand.ToUniversalTime().ToString("o")));
                 var sumResponse = new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), 1, lastSyncedBand);
                 if (sumResponse.rows == null || sumResponse.rows.FirstOrDefault() == null)
                     return Request.EventWaitPoll(null, triggerState);
@@ -98,7 +98,7 @@ namespace MSHealthAPI.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", DateTimeOffset.Parse(triggerState).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Summaries/{0}?startTime={1}", "Hourly", DateTime.Parse(triggerState).ToUniversalTime().ToString("o")));
                 return Request.EventTriggered( new SummaryResponse(JsonConvert.DeserializeObject<Summaries>((await result.Content.ReadAsStringAsync())), delay)  , triggerState = DateTime.UtcNow.ToString("o"));
             }
         }
@@ -127,7 +127,7 @@ namespace MSHealthAPI.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTimeOffset.Parse(triggerState).AddDays(-1).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTime.Parse(triggerState).AddDays(-1).ToUniversalTime().ToString("o")));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
                 resultList.EndTimeInclusive(DateTime.Parse(triggerState).ToUniversalTime(), DateTime.UtcNow);
@@ -162,7 +162,7 @@ namespace MSHealthAPI.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTimeOffset.Parse(startTime).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTime.Parse(startTime).ToUniversalTime().ToString("o")));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
                 resultList.EndTimeInclusive(DateTime.Parse(activityTime).ToUniversalTime(), DateTime.Parse(endTime).ToUniversalTime());

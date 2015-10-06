@@ -167,10 +167,6 @@
   <ItemGroup>
     <Content Include="apiapp.json" />
     <Content Include="index.cshtml" />
-    <None Include="Properties\PublishProfiles\MSHealthAPITest2%28premium%29 %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\MSHealthAPITest2%28premium%29.pubxml" />
-    <None Include="Properties\PublishProfiles\MSHealthhollant5%28hollant5%29.pubxml" />
-    <None Include="Properties\PublishProfiles\MSHealthhollantest1%28hollantest1%29 %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\MSHealthhollantest1%28hollantest1%29.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
