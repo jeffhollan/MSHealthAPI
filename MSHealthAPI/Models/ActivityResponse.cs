@@ -43,6 +43,23 @@ namespace MSHealthAPI.Models
         public string pausedDuration { get; set; }
         public long? splitDistance { get; set; }
 
+        public double actualDistanceMiles { get {
+                if (actualDistance != null)
+                    return Math.Round(((double)actualDistance / 160934.4), 2);
+                else
+                    return 0.0;
+                    } }
+        public double actualDistanceKm
+        {
+            get
+            {
+                if (actualDistance != null)
+                    return Math.Round(((double)actualDistance / 100000), 2);
+                else
+                    return 0.0;
+            }
+        }
+
     }
 
     public class BikeResponse : DistanceResponse
