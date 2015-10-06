@@ -12,7 +12,7 @@ namespace MSHealthAPI.Models
         public string totalRestlessSleepDuration { get; set; }
         public string totalRestfulSleepDuration { get; set; }
         public int? restingHeartRate { get; set; }
-        public DateTime fallAsleepTime { get; set; }
-        public DateTime wakeupTime { get; set; }
+        public DateTimeOffset fallAsleepTime { get; set; }
+        public DateTimeOffset wakeupTime { get; set; }
     }
 }

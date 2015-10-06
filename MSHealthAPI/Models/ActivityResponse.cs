@@ -25,10 +25,10 @@ namespace MSHealthAPI.Models
         public string activityType { get; set; }
         public string id { get; set; }
         public string userId { get; set; }
-        public DateTime startTime { get; set; }
-        public DateTime endTime { get; set; }
-        public DateTime dayId { get; set; }
-        public DateTime createdTime { get; set; }
+        public DateTimeOffset startTime { get; set; }
+        public DateTimeOffset endTime { get; set; }
+        public DateTimeOffset dayId { get; set; }
+        public DateTimeOffset createdTime { get; set; }
         public string createdBy { get; set; }
         public string name { get; set; }
         public double duration { get; set; }
@@ -83,8 +83,8 @@ namespace MSHealthAPI.Models
         public double totalRestlessSleepDuration { get; set; }
         public double totalRestfulSleepDuration { get; set; }
         public int? restingHeartRate { get; set; }
-        public DateTime fallAsleepTime { get; set; }
-        public DateTime wakeupTime { get; set; }
+        public DateTimeOffset fallAsleepTime { get; set; }
+        public DateTimeOffset wakeupTime { get; set; }
     }
 
     public abstract class DistanceResponse : PerformanceResponse
