@@ -127,9 +127,10 @@ namespace MSHealthAPI.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authorization.access_token);
-                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTimeOffset.Parse(triggerState).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
+                var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTimeOffset.Parse(triggerState).AddDays(-1).ToOffset(new TimeSpan(offset, 0, 0)).ToString("o")));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
+                resultList.EndTimeInclusive(DateTime.Parse(triggerState).ToUniversalTime(), DateTime.UtcNow);
                 if (resultList.NoActivities())
                     return Request.EventWaitPoll(null, triggerState);
                 else
