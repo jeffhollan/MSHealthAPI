@@ -45,8 +45,8 @@ namespace MSHealthAPI.Controllers
 
             await tokenHandler.CheckToken();
 
-            if (authorization == null)
-                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
+            if (authorization == null || authorization.access_token == null)
+                return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  Ensure your client ID, client Secret, and redirect are all correct.  See the GitHub repo for details.");
 
 
             using (var client = new HttpClient())
@@ -91,7 +91,7 @@ namespace MSHealthAPI.Controllers
 
             await tokenHandler.CheckToken();
 
-            if (authorization == null)
+            if (authorization == null || authorization.access_token == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
 
 
@@ -120,7 +120,7 @@ namespace MSHealthAPI.Controllers
 
             await tokenHandler.CheckToken();
 
-            if (authorization == null)
+            if (authorization == null || authorization.access_token == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
 
 
@@ -156,7 +156,7 @@ namespace MSHealthAPI.Controllers
 
             await tokenHandler.CheckToken();
 
-            if (authorization == null)
+            if (authorization == null || authorization.access_token == null)
                 return Request.CreateErrorResponse(HttpStatusCode.Unauthorized, "You are not authorized. Please go to https://{url}/authorize to authorize against Microsoft Health Service.  See the GitHub repo for details.");
 
             using (var client = new HttpClient())
