@@ -130,7 +130,7 @@ namespace MSHealthAPI.Controllers
                 var result = await client.GetAsync(string.Format("https://api.microsofthealth.net/v1/me/Activities?startTime={0}", DateTime.Parse(triggerState).AddDays(-1).ToUniversalTime().ToString("o")));
                 string content = await result.Content.ReadAsStringAsync();
                 ActivityList resultList = JsonConvert.DeserializeObject<ActivityList>(content);
-                resultList.EndTimeInclusive(DateTime.Parse(triggerState).ToUniversalTime(), DateTime.UtcNow);
+                resultList.EndTimeInclusive(DateTime.Parse(triggerState).ToUniversalTime().Add(timezoneOffset), DateTime.UtcNow.Add(timezoneOffset));
                 if (resultList.NoActivities())
                     return Request.EventWaitPoll(null, triggerState);
                 else

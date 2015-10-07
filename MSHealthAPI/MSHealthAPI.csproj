@@ -168,6 +168,7 @@
     <Content Include="apiapp.json" />
     <Content Include="index.cshtml" />
     <None Include="Properties\PublishProfiles\MSHealthhollantest1%28hollantest1%29.pubxml" />
+    <None Include="Properties\PublishProfiles\mshealthjeffhollan%28mymshealthlogicapp%29.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -18,7 +18,7 @@ namespace MSHealthAPI.Models
             rows = new List<TabularSummary>();
             foreach (var summary in mshealthResponse.summaries)
             {
-                if (summary.endTime < DateTime.UtcNow.AddHours((-1) * (1 - delay)))
+                if (summary.endTime < DateTime.UtcNow.AddHours((-1) * (1 - delay)).Add(Controllers.MSHealthController.timezoneOffset))
                 {
                     rows.Add(new TabularSummary
                     {
@@ -43,7 +43,7 @@ namespace MSHealthAPI.Models
 
         public SummaryResponse(Summaries mshealthResponse, int delay, DateTime lastSyncedBand) : this(mshealthResponse, delay)
         {
-            rows.RemoveAll(q => q.endTime > lastSyncedBand);
+            rows.RemoveAll(q => q.endTime > lastSyncedBand.Add(Controllers.MSHealthController.timezoneOffset));
             previousTriggerState = lastSyncedBand;
         }
     }
@@ -56,9 +56,9 @@ namespace MSHealthAPI.Models
     public class TabularSummary
     {
         public string userId { get; set; }
-        public DateTimeOffset startTime { get; set; }
-        public DateTimeOffset endTime { get; set; }
-        public DateTimeOffset parentDay { get; set; }
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
+        public DateTime parentDay { get; set; }
         public bool isTransitDay { get; set; }
         public string period { get; set; }
         public string duration { get; set; }

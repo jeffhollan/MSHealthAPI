@@ -8,14 +8,14 @@ namespace MSHealthAPI.Models
 {
     public class Summary
     {
-        private DateTimeOffset _startTime;
-        private DateTimeOffset _endTime;
-        private DateTimeOffset _parentDay;
+        private DateTime _startTime;
+        private DateTime _endTime;
+        private DateTime _parentDay;
 
         public string userId { get; set; }
-        public DateTimeOffset startTime { get { return _startTime; } set { _startTime = value.ToOffset(MSHealthController.timezoneOffset); } }
-        public DateTimeOffset endTime { get { return _endTime; } set { _endTime = value.ToOffset(MSHealthController.timezoneOffset); } }
-        public DateTimeOffset parentDay { get { return _endTime.Date; } set { _parentDay = value; } }
+        public DateTime startTime { get { return _startTime; } set { _startTime = DateTimeOffset.Parse(value.ToString("o")).ToOffset(MSHealthController.timezoneOffset).DateTime; } }
+        public DateTime endTime { get { return _endTime; } set { _endTime = DateTimeOffset.Parse(value.ToString("o")).ToOffset(MSHealthController.timezoneOffset).DateTime; } }
+        public DateTime parentDay { get { return _endTime.Date; } set { _parentDay = value; } }
         public bool isTransitDay { get; set; }
         public string period { get; set; }
         public string duration { get; set; }
